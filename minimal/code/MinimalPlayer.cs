@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MinimalExample
 {
-	partial class MinimalPlayer : BasePlayer
+	partial class MinimalPlayer : Player
 	{
 		public override void Respawn()
 		{
@@ -21,9 +21,9 @@ namespace MinimalExample
 			Animator = new StandardPlayerAnimator();
 
 			//
-			// Use FirstPersonCamera (you can make your own Camera for 100% control)
+			// Use ThirdPersonCamera (you can make your own Camera for 100% control)
 			//
-			Camera = new FirstPersonCamera();
+			Camera = new ThirdPersonCamera();
 
 			EnableAllCollisions = true;
 			EnableDrawing = true;
@@ -36,9 +36,9 @@ namespace MinimalExample
 		/// <summary>
 		/// Called every tick, clientside and serverside.
 		/// </summary>
-		protected override void Tick()
+		public override void Simulate( Client cl )
 		{
-			base.Tick();
+			base.Simulate( cl );
 
 			//
 			// If we're running serverside and Attack1 was just pressed, spawn a ragdoll
@@ -47,9 +47,10 @@ namespace MinimalExample
 			{
 				var ragdoll = new ModelEntity();
 				ragdoll.SetModel( "models/citizen/citizen.vmdl" );  
-				ragdoll.WorldPos = EyePos + EyeRot.Forward * 20;
+				ragdoll.Position = EyePos + EyeRot.Forward * 40;
+				ragdoll.Rotation = Rotation.LookAt( Vector3.Random.Normal );
 				ragdoll.SetupPhysicsFromModel( PhysicsMotionType.Dynamic, false );
-				ragdoll.Velocity = EyeRot.Forward * 5000;
+				ragdoll.PhysicsGroup.Velocity = EyeRot.Forward * 1000;
 			}
 		}
 	}

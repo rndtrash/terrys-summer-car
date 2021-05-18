@@ -5,9 +5,9 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-/// <summary>
-/// You don't need to put things in a namespace, but it doesn't hurt.
-/// </summary>
+//
+// You don't need to put things in a namespace, but it doesn't hurt.
+//
 namespace MinimalExample
 {
 
@@ -43,9 +43,17 @@ namespace MinimalExample
 			}
 		}
 
-		public override Player CreatePlayer()
+		/// <summary>
+		/// A client has joined the server. Make them a pawn to play with
+		/// </summary>
+		public override void ClientJoined( Client client )
 		{
-			return new MinimalPlayer();
+			base.ClientJoined( client );
+
+			var player = new MinimalPlayer();
+			client.Pawn = player;
+
+			player.Respawn();
 		}
 	}
 

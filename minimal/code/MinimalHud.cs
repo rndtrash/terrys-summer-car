@@ -1,17 +1,23 @@
 ﻿using Sandbox.UI;
 
-/// <summary>
-/// You don't need to put things in a namespace, but it doesn't hurt.
-/// </summary>
+//
+// You don't need to put things in a namespace, but it doesn't hurt.
+//
 namespace MinimalExample
 {
-	public partial class MinimalHudEntity : Sandbox.Hud
+	/// <summary>
+	/// This is the HUD entity. It creates a RootPanel clientside, which can be accessed
+	/// via RootPanel on this entity, or Local.Hud.
+	/// </summary>
+	public partial class MinimalHudEntity : Sandbox.HudEntity<RootPanel>
 	{
 		public MinimalHudEntity()
 		{
 			if ( IsClient )
 			{
 				RootPanel.SetTemplate( "/minimalhud.html" );
+
+				RootPanel.AddChild<ChatBox>();
 			}
 		}
 	}
