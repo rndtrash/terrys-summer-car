@@ -2,9 +2,9 @@
 using System;
 using System.Linq;
 
-namespace MinimalExample
+namespace TSC
 {
-	partial class MinimalPlayer : Player
+	partial class TSCPlayer : Player
 	{
 		public override void Respawn()
 		{
@@ -23,7 +23,7 @@ namespace MinimalExample
 			//
 			// Use ThirdPersonCamera (you can make your own Camera for 100% control)
 			//
-			Camera = new ThirdPersonCamera();
+			Camera = new FirstPersonCamera();
 
 			EnableAllCollisions = true;
 			EnableDrawing = true;

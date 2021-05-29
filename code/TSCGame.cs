@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 //
 // You don't need to put things in a namespace, but it doesn't hurt.
 //
-namespace MinimalExample
+namespace TSC
 {
 
 	/// <summary>
@@ -21,10 +21,10 @@ namespace MinimalExample
 	/// Your game needs to be registered (using [Library] here) with the same name 
 	/// as your game addon. If it isn't then we won't be able to find it.
 	/// </summary>
-	[Library( "minimal" )]
-	public partial class MinimalGame : Sandbox.Game
+	[Library( "tsc" )]
+	public partial class TSCGame : Sandbox.Game
 	{
-		public MinimalGame()
+		public TSCGame()
 		{
 			if ( IsServer )
 			{
@@ -34,7 +34,7 @@ namespace MinimalExample
 				// and when it is created clientside it creates the actual
 				// UI panels. You don't have to create your HUD via an entity,
 				// this just feels like a nice neat way to do it.
-				new MinimalHudEntity();
+				new TSCHudEntity();
 			}
 
 			if ( IsClient )
@@ -50,7 +50,7 @@ namespace MinimalExample
 		{
 			base.ClientJoined( client );
 
-			var player = new MinimalPlayer();
+			var player = new TSCPlayer();
 			client.Pawn = player;
 
 			player.Respawn();
