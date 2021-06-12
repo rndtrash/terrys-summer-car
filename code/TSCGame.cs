@@ -1,34 +1,40 @@
 ﻿
 using Sandbox;
-using Sandbox.UI.Construct;
 using System;
-using System.IO;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 //
 // You don't need to put things in a namespace, but it doesn't hurt.
 //
 namespace TSC
 {
-
-	/// <summary>
-	/// This is your game class. This is an entity that is created serverside when
-	/// the game starts, and is replicated to the client. 
-	/// 
-	/// You can use this to create things like HUDs and declare which player class
-	/// to use for spawned players.
-	/// 
-	/// Your game needs to be registered (using [Library] here) with the same name 
-	/// as your game addon. If it isn't then we won't be able to find it.
-	/// </summary>
-	[Library( "tsc" )]
 	public partial class TSCGame : Sandbox.Game
 	{
+		public static Dictionary<string, TSCProp> Props;
+		public static string PropExtension = ".prop.json";
+
+		public struct TSCPropJSON
+		{
+			public struct TypePos
+			{
+				public string type { get; set; }
+				public Vector3 pos { get; set; }
+			}
+
+
+			public string type { get; set; }
+			public List<TypePos> sockets { get; set; }
+			public List<TypePos> plugs { get; set; }
+		}
+
 		public TSCGame()
 		{
 			if ( IsServer )
 			{
 				Log.Info( "My Gamemode Has Created Serverside!" );
+
+				RecursivePropLookup();
 
 				// Create a HUD entity. This entity is globally networked
 				// and when it is created clientside it creates the actual
@@ -54,6 +60,47 @@ namespace TSC
 			client.Pawn = player;
 
 			player.Respawn();
+		}
+
+		[ServerCmd("tsc_spawn")]
+		public static void tsc_spawn( string name)
+		{
+			Assert.NotNull( ConsoleSystem.Caller );
+			if ( Props.ContainsKey( name ) )
+			{
+				var o = Props[name].Spawn();
+				o.Position = ConsoleSystem.Caller.Pawn.Position;
+			}
+			else
+				Log.Warning( $"tsc_spawn: not found {name}. available: {String.Join( '/', Props.Keys )}" );
+		}
+
+		// TODO: please don't
+		[ServerCmd("tsc_lookup")]
+		public static void RecursivePropLookup(string root = "entities")
+		{
+			Log.Info( $"RecursivePropLookup looking..." );
+			if (Props == null)
+				Props = new Dictionary<string, TSCProp>();
+
+			var result = FileSystem.Mounted.FindFile( root, "*" + PropExtension, true );
+			foreach (var file in result)
+			{
+				var json = FileSystem.Mounted.ReadJson<TSCPropJSON>( $"{root}/{file}" );
+				var filenoext = file.Remove( file.Length - PropExtension.Length );
+				var tscprop = new TSCProp() {
+					Type = json.type,
+					Model = $"models/{filenoext}.vmdl"
+				};
+
+				//DebugOverlay.Line( Vector3.Up * 1000.0f, tscprop.Position, 1000.0f );
+				//
+				var fn = filenoext.Split( '/' ).Last();
+				if ( Props.ContainsKey( fn ) )
+					Props[fn] = tscprop;
+				else
+					Props.Add( fn, tscprop );
+			}
 		}
 	}
 

@@ -1,20 +1,2 @@
 {
-		"name": "terrys-summer-car",
-		"sharedassets": "*.*",
-		
-		"depends": 
-		[
-			"base",
-			"citizen",
-			"rust"
-		],
-
-		"gamemodes":
-		[
-			{
-				"name": "tsc",
-				"title": "Terry's Summer Car",
-				"description": "My Summer Car + Jalopy + fun"
-			}
-		]
 }

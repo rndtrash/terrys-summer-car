@@ -4,22 +4,22 @@ using Sandbox.UI.Construct;
 
 namespace TSC
 {
-	public class Health : Panel
-	{
-		public Label Label;
+    public class Health : Panel
+    {
+        public Label Label;
 
-		public Health()
-		{
-			Add.Label( "🩸", "icon" );
-			Label = Add.Label( "100", "value" );
-		}
+        public Health()
+        {
+            Add.Label( "🩸", "icon" );
+            Label = Add.Label( "100", "value" );
+        }
 
-		public override void Tick()
-		{
-			var player = Local.Pawn;
-			if ( player == null ) return;
+        public override void Tick()
+        {
+            var player = Local.Pawn;
+            if ( player == null ) return;
 
-			Label.Text = $"{player.Health:n0}";
-		}
-	}
+            Label.Text = $"{player.Health:n0}";
+        }
+    }
 }

@@ -1,0 +1,15 @@
+{
+	"type": "generic",
+	"sockets": [
+		{
+			"type": "cube",
+			"pos": [0, 0.5, 0]
+		}
+	],
+	"plugs": [
+		{
+			"type": "cube",
+			"pos": [0, -0.5, 0]
+		}
+	]
+}

@@ -1,6 +1,4 @@
 ﻿using Sandbox;
-using System;
-using System.Linq;
 
 namespace TSC
 {
@@ -15,10 +13,8 @@ namespace TSC
 			//
 			Controller = new WalkController();
 
-			//
-			// Use StandardPlayerAnimator  (you can make your own PlayerAnimator for 100% control)
-			//
-			Animator = new StandardPlayerAnimator();
+			// T POSE
+			Animator = new TPoseAnimator();
 
 			//
 			// Use ThirdPersonCamera (you can make your own Camera for 100% control)
@@ -40,18 +36,7 @@ namespace TSC
 		{
 			base.Simulate( cl );
 
-			//
-			// If we're running serverside and Attack1 was just pressed, spawn a ragdoll
-			//
-			if ( IsServer && Input.Pressed( InputButton.Attack1 ) )
-			{
-				var ragdoll = new ModelEntity();
-				ragdoll.SetModel( "models/citizen/citizen.vmdl" );  
-				ragdoll.Position = EyePos + EyeRot.Forward * 40;
-				ragdoll.Rotation = Rotation.LookAt( Vector3.Random.Normal );
-				ragdoll.SetupPhysicsFromModel( PhysicsMotionType.Dynamic, false );
-				ragdoll.PhysicsGroup.Velocity = EyeRot.Forward * 1000;
-			}
+			SimulateActiveChild( cl, ActiveChild );
 		}
 	}
 }

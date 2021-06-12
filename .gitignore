@@ -1,6 +1,5 @@
+code/*.csproj
 code/obj
-code/Properties
-code/tsc.csproj
-code/accesslist.txt
-.intermediate/
-tools*.bin
+code/Properties/launchSettings.json
+.intermediate
+tools_*.bin
