@@ -22,6 +22,7 @@ namespace TSC
 				RootPanel.AddChild<ChatBox>();
 				RootPanel.AddChild<KillFeed>();
 				RootPanel.AddChild<Scoreboard<ScoreboardEntry>>();
+				RootPanel.AddChild<NameTags>();
 			}
 		}
 	}

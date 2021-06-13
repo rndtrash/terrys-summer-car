@@ -29,6 +29,7 @@ namespace TSC
 		public struct TSCSocketJSON
 		{
 			public string Type { get; set; }
+			public Cube Trigger { get; set; }
 		}
 
 		public struct TSCPlugJSON
@@ -70,7 +71,7 @@ namespace TSC
 			player.Respawn();
 		}
 
-		[ServerCmd( "tsc_spawn" )]
+		[AdminCmd( "tsc_spawn" )]
 		public static void tsc_spawn( string name = "" )
 		{
 			Assert.NotNull( ConsoleSystem.Caller );
@@ -84,14 +85,16 @@ namespace TSC
 			if ( Props.ContainsKey( name ) )
 			{
 				var o = Props[name].Spawn();
-				o.Position = ConsoleSystem.Caller.Pawn.Position;
+
+				var p = ConsoleSystem.Caller.Pawn;
+				o.Position = p.Position + p.Rotation.Forward.Normal * 100.0f;
 			}
 			else
 				Log.Warning( $"tsc_spawn: not found {name}." );
 		}
 
 		// TODO: please don't
-		[ServerCmd( "tsc_lookup" )]
+		[AdminCmd( "tsc_lookup" )]
 		public static void RecursivePropLookup( string root = "entities" )
 		{
 			Log.Info( $"RecursivePropLookup looking..." );
@@ -99,7 +102,7 @@ namespace TSC
 			IEnumerable<string> result;
 			string path;
 
-			// Looking for sockets...
+			#region Locate sockets
 			if ( Sockets == null )
 				Sockets = new Dictionary<string, TSCSocketFactory>();
 
@@ -108,11 +111,13 @@ namespace TSC
 			foreach ( var file in result )
 			{
 				var json = FileSystem.Mounted.ReadJson<TSCSocketJSON>( $"{root}/sockets/{file}" );
+				Log.Info( $"RecursivePropLookup Sockets {json.Trigger.First};{json.Trigger.Second}" );
 				var filenoext = file.Remove( file.Length - SocketExtension.Length );
 				var tscsocket = new TSCSocketFactory()
 				{
 					Type = json.Type,
-					Model = $"models/sockets/{filenoext}.vmdl"
+					Model = $"models/sockets/{filenoext}.vmdl",
+					TriggerZone = json.Trigger
 				};
 				var fn = filenoext.Split( '/' ).Last();
 				if ( Sockets.ContainsKey( fn ) )
@@ -123,8 +128,9 @@ namespace TSC
 				else
 					Sockets.Add( fn, tscsocket );
 			}
+			#endregion
 
-			// Looking for plugs...
+			#region Locate plugs
 			if ( Plugs == null )
 				Plugs = new Dictionary<string, TSCPlugFactory>();
 
@@ -148,8 +154,9 @@ namespace TSC
 				else
 					Plugs.Add( fn, tscplug );
 			}
+			#endregion
 
-			// Looking for props...
+			#region Locate props
 			if ( Props == null )
 				Props = new Dictionary<string, TSCPropFactory>();
 
@@ -203,6 +210,7 @@ namespace TSC
 				else
 					Props.Add( fn, tscprop );
 			}
+			#endregion
 		}
 	}
 

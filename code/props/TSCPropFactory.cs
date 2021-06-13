@@ -37,10 +37,8 @@ namespace TSC
 				var socket = SpawnSockets[i];
 				var socketposrot = SocketPosRots[i];
 				SocketEntity so = socket.Spawn();
-				Log.Info( $"socket {socketposrot.Position}" );
 				so.Position = socketposrot.Position;
 				so.Parent = o;
-				Log.Info( $"socket {so.Position}" );
 				so.Rotation = Rotation.From( socketposrot.Rotation.x, socketposrot.Rotation.y, socketposrot.Rotation.z );
 				o.Sockets.Add( so );
 			}
@@ -50,10 +48,8 @@ namespace TSC
 				var plug = SpawnPlugs[i];
 				var plugposrot = PlugPosRots[i];
 				PlugEntity po = plug.Spawn();
-				Log.Info( $"plug {plugposrot.Position}" );
 				po.Position = plugposrot.Position;
 				po.Parent = o;
-				Log.Info( $"plug {po.Position}" );
 				po.Rotation = Rotation.From( plugposrot.Rotation.x, plugposrot.Rotation.y, plugposrot.Rotation.z );
 				o.Plugs.Add( po );
 			}

@@ -1,10 +1,14 @@
 ﻿using Sandbox;
+using System;
 
 namespace TSC
 {
-	public class SocketEntity : ModelEntity
+	public partial class SocketEntity : ModelEntity
 	{
 		public string SocketType;
+
+		[Net]
+		public BaseTrigger PlugTrigger { get; set; }
 
 		public SocketEntity()
 		{

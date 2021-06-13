@@ -18,4 +18,10 @@
 		public Vector3 Position { get; set; }
 		public Vector3 Rotation { get; set; }
 	}
+
+	public struct Cube
+	{
+		public Vector3 First { get; set; }
+		public Vector3 Second { get; set; }
+	}
 }
