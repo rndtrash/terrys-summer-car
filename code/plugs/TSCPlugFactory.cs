@@ -1,32 +1,28 @@
 ﻿using Sandbox;
 using System;
-using System.Collections.Generic;
 
 namespace TSC
 {
-	public class TSCProp
+	public class TSCPlugFactory
 	{
 		public string Type;
 		public string Model;
 
-		public TSCProp()
+		public PlugEntity Spawn()
 		{
-		}
-
-		public Prop Spawn()
-		{
-			Prop o;
-			switch (Type)
+			PlugEntity o;
+			switch ( Type )
 			{
-				case "generic":
-					o = new Prop();
+				case "structural":
+					o = new PlugEntity();
 					break;
 				default:
 					throw new ArgumentException( $"WTF?? No constructor for {Type}???" );
 			}
 
+			o.PlugType = Type;
 			o.SetModel( Model );
-			o.SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
+			o.SetupPhysicsFromModel( PhysicsMotionType.Static ); // TODO: Static?
 
 			return o;
 		}

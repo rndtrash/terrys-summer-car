@@ -11,21 +11,29 @@ namespace TSC
 {
 	public partial class TSCGame : Sandbox.Game
 	{
-		public static Dictionary<string, TSCProp> Props;
+		public static Dictionary<string, TSCSocketFactory> Sockets;
+		public static Dictionary<string, TSCPlugFactory> Plugs;
+		public static Dictionary<string, TSCPropFactory> Props;
+
+		public static string SocketExtension = ".socket.json";
+		public static string PlugExtension = ".plug.json";
 		public static string PropExtension = ".prop.json";
 
 		public struct TSCPropJSON
 		{
-			public struct TypePos
-			{
-				public string type { get; set; }
-				public Vector3 pos { get; set; }
-			}
+			public string Type { get; set; }
+			public List<TypePosRot> Sockets { get; set; }
+			public List<TypePosRot> Plugs { get; set; }
+		}
 
+		public struct TSCSocketJSON
+		{
+			public string Type { get; set; }
+		}
 
-			public string type { get; set; }
-			public List<TypePos> sockets { get; set; }
-			public List<TypePos> plugs { get; set; }
+		public struct TSCPlugJSON
+		{
+			public string Type { get; set; }
 		}
 
 		public TSCGame()
@@ -62,42 +70,136 @@ namespace TSC
 			player.Respawn();
 		}
 
-		[ServerCmd("tsc_spawn")]
-		public static void tsc_spawn( string name)
+		[ServerCmd( "tsc_spawn" )]
+		public static void tsc_spawn( string name = "" )
 		{
 			Assert.NotNull( ConsoleSystem.Caller );
+
+			if ( name == "" )
+			{
+				Log.Error( $"Available entities to spawn:\n- {String.Join( "\n- ", Props.Keys )}" );
+				return;
+			}
+
 			if ( Props.ContainsKey( name ) )
 			{
 				var o = Props[name].Spawn();
 				o.Position = ConsoleSystem.Caller.Pawn.Position;
 			}
 			else
-				Log.Warning( $"tsc_spawn: not found {name}. available: {String.Join( '/', Props.Keys )}" );
+				Log.Warning( $"tsc_spawn: not found {name}." );
 		}
 
 		// TODO: please don't
-		[ServerCmd("tsc_lookup")]
-		public static void RecursivePropLookup(string root = "entities")
+		[ServerCmd( "tsc_lookup" )]
+		public static void RecursivePropLookup( string root = "entities" )
 		{
 			Log.Info( $"RecursivePropLookup looking..." );
-			if (Props == null)
-				Props = new Dictionary<string, TSCProp>();
 
-			var result = FileSystem.Mounted.FindFile( root, "*" + PropExtension, true );
-			foreach (var file in result)
+			IEnumerable<string> result;
+			string path;
+
+			// Looking for sockets...
+			if ( Sockets == null )
+				Sockets = new Dictionary<string, TSCSocketFactory>();
+
+			path = $"{root}/sockets";
+			result = FileSystem.Mounted.FindFile( path, "*" + SocketExtension, true );
+			foreach ( var file in result )
 			{
-				var json = FileSystem.Mounted.ReadJson<TSCPropJSON>( $"{root}/{file}" );
+				var json = FileSystem.Mounted.ReadJson<TSCSocketJSON>( $"{root}/sockets/{file}" );
+				var filenoext = file.Remove( file.Length - SocketExtension.Length );
+				var tscsocket = new TSCSocketFactory()
+				{
+					Type = json.Type,
+					Model = $"models/sockets/{filenoext}.vmdl"
+				};
+				var fn = filenoext.Split( '/' ).Last();
+				if ( Sockets.ContainsKey( fn ) )
+				{
+					Sockets[fn] = null; // FIXME: trigger GC???????
+					Sockets[fn] = tscsocket;
+				}
+				else
+					Sockets.Add( fn, tscsocket );
+			}
+
+			// Looking for plugs...
+			if ( Plugs == null )
+				Plugs = new Dictionary<string, TSCPlugFactory>();
+
+			path = $"{root}/plugs";
+			result = FileSystem.Mounted.FindFile( path, "*" + PlugExtension, true );
+			foreach ( var file in result )
+			{
+				var json = FileSystem.Mounted.ReadJson<TSCPlugJSON>( $"{root}/plugs/{file}" );
+				var filenoext = file.Remove( file.Length - PlugExtension.Length );
+				var tscplug = new TSCPlugFactory()
+				{
+					Type = json.Type,
+					Model = $"models/plugs/{filenoext}.vmdl"
+				};
+				var fn = filenoext.Split( '/' ).Last();
+				if ( Plugs.ContainsKey( fn ) )
+				{
+					Plugs[fn] = null; // FIXME: trigger GC???????
+					Plugs[fn] = tscplug;
+				}
+				else
+					Plugs.Add( fn, tscplug );
+			}
+
+			// Looking for props...
+			if ( Props == null )
+				Props = new Dictionary<string, TSCPropFactory>();
+
+			path = $"{root}/props";
+			result = FileSystem.Mounted.FindFile( path, "*" + PropExtension, true );
+			foreach ( var file in result )
+			{
+				var json = FileSystem.Mounted.ReadJson<TSCPropJSON>( $"{root}/props/{file}" );
 				var filenoext = file.Remove( file.Length - PropExtension.Length );
-				var tscprop = new TSCProp() {
-					Type = json.type,
-					Model = $"models/{filenoext}.vmdl"
+
+				List<TSCSocketFactory> prop_sockets = new();
+				List<PosRot> prop_socketposrots = new();
+				foreach ( var socket in json.Sockets )
+				{
+					if ( !Sockets.ContainsKey( socket.Type ) )
+					{
+						throw new ArgumentException( $"RecursivePropLookup: {filenoext}: invalid socket {socket.Type}" );
+					}
+					prop_sockets.Add( Sockets[socket.Type] );
+					prop_socketposrots.Add( new PosRot( socket.Position, socket.Rotation ) );
+				}
+
+				List<TSCPlugFactory> prop_plugs = new();
+				List<PosRot> prop_plugposrots = new();
+				foreach ( var plug in json.Plugs )
+				{
+					if ( !Plugs.ContainsKey( plug.Type ) )
+					{
+						throw new ArgumentException( $"RecursivePropLookup: {filenoext}: invalid plug {plug.Type}" );
+					}
+					prop_plugs.Add( Plugs[plug.Type] );
+					prop_plugposrots.Add( new PosRot( plug.Position, plug.Rotation ) );
+				}
+
+				var tscprop = new TSCPropFactory()
+				{
+					Type = json.Type,
+					Model = $"models/props/{filenoext}.vmdl",
+					SpawnSockets = prop_sockets,
+					SocketPosRots = prop_socketposrots,
+					SpawnPlugs = prop_plugs,
+					PlugPosRots = prop_plugposrots
 				};
 
-				//DebugOverlay.Line( Vector3.Up * 1000.0f, tscprop.Position, 1000.0f );
-				//
 				var fn = filenoext.Split( '/' ).Last();
 				if ( Props.ContainsKey( fn ) )
+				{
+					Props[fn] = null; // FIXME: trigger GC???????
 					Props[fn] = tscprop;
+				}
 				else
 					Props.Add( fn, tscprop );
 			}
