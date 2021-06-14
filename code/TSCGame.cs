@@ -111,7 +111,6 @@ namespace TSC
 			foreach ( var file in result )
 			{
 				var json = FileSystem.Mounted.ReadJson<TSCSocketJSON>( $"{root}/sockets/{file}" );
-				Log.Info( $"RecursivePropLookup Sockets {json.Trigger.First};{json.Trigger.Second}" );
 				var filenoext = file.Remove( file.Length - SocketExtension.Length );
 				var tscsocket = new TSCSocketFactory()
 				{

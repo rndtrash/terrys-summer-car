@@ -7,11 +7,11 @@ namespace TSC
 	{
 		public class TestTrigger : BaseTrigger
 		{
-			public override void StartTouch( Entity other )
+			public override void Touch( Entity other )
 			{
-				Log.Info( $"Touch! {other}" );
+				Log.Info( $"Touch! {other.EntityName}" );
 
-				base.StartTouch( other );
+				base.Touch( other );
 			}
 		}
 
@@ -42,7 +42,6 @@ namespace TSC
 
 			t.Parent = o;
 			o.PlugTrigger = t;
-			Log.Info( $"{o.PlugTrigger == null}" );
 
 			return o;
 		}
