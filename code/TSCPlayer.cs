@@ -2,8 +2,9 @@
 
 namespace TSC
 {
-	partial class TSCPlayer : Player
+	public partial class TSCPlayer : Player
 	{
+
 		public override void Respawn()
 		{
 			SetModel( "models/citizen/citizen.vmdl" );
@@ -26,7 +27,14 @@ namespace TSC
 			EnableHideInFirstPerson = true;
 			EnableShadowInFirstPerson = true;
 
+			Inventory = new TSCInventory(this);
+
+			var itemEntity = new ItemEntity();
+
 			base.Respawn();
+
+			itemEntity.Position = Position + Rotation.Forward * 25.0f;
+			Inventory.Add( itemEntity );
 		}
 
 		/// <summary>

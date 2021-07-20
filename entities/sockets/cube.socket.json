@@ -2,7 +2,7 @@
 	"type": "structural",
 	"trigger":
 	{
-		"first": [-15, -15, -15],
-		"second": [15, 15, 15]
+		"first": [-25, -25, -25],
+		"second": [25, 25, 25]
 	}
 }

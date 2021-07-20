@@ -37,8 +37,7 @@ namespace TSC
 
 			var t = new TestTrigger();
 			t.Tags.Add( "socket" );
-			t.CollisionBounds = new BBox( TriggerZone.First, TriggerZone.Second );
-			t.UsePhysicsCollision = true;
+			t.SetupPhysicsFromAABB( PhysicsMotionType.Static, TriggerZone.First, TriggerZone.Second );
 
 			t.Parent = o;
 			o.PlugTrigger = t;

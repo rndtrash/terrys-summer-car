@@ -23,6 +23,8 @@ namespace TSC
 				RootPanel.AddChild<KillFeed>();
 				RootPanel.AddChild<Scoreboard<ScoreboardEntry>>();
 				RootPanel.AddChild<NameTags>();
+
+				RootPanel.AddChild<InventoryPanel>();
 			}
 		}
 	}
