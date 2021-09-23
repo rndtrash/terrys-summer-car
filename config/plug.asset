@@ -1,0 +1,10 @@
+// 
+// TSC.Plug
+// 
+@BaseClass = plug : ""
+[
+	title(string) : "Title" :  : ""
+	type(string) : "Type" :  : ""
+	model(resource:vmdl) : "Model" :  : ""
+]
+

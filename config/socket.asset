@@ -1,0 +1,12 @@
+// 
+// TSC.Socket
+// 
+@BaseClass = socket : ""
+[
+	title(string) : "Title" :  : ""
+	type(string) : "Type" :  : ""
+	model(resource:vmdl) : "Model" :  : ""
+	triggerzonemins(vector) : "Trigger Zone Mins" :  : ""
+	triggerzonemaxs(vector) : "Trigger Zone Maxs" :  : ""
+]
+

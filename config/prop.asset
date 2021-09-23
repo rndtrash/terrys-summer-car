@@ -1,0 +1,13 @@
+// 
+// TSC.Prop
+// 
+@BaseClass = prop : ""
+[
+	title(string) : "Title" :  : ""
+	description(string) : "Description" :  : ""
+	type(string) : "Type" :  : ""
+	model(resource:vmdl) : "Model" :  : ""
+	plugattachmentpoints(array:string) : "Plug Attachment Points" :  : ""
+	socketattachmentpoints(array:string) : "Socket Attachment Points" :  : ""
+]
+

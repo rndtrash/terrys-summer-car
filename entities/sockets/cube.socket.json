@@ -1,8 +1,0 @@
-{
-	"type": "structural",
-	"trigger":
-	{
-		"first": [-25, -25, -25],
-		"second": [25, 25, 25]
-	}
-}
