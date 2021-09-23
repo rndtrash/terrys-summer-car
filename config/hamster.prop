@@ -5,7 +5,7 @@
 		title = "Hamster"
 		description = "Hamster :)"
 		type = "generic"
-		model = resource:""
+		model = resource:"models/props/hamster.vmdl"
 		plugattachmentpoints = 
 		[
 			"plug;cube",
